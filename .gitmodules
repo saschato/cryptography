@@ -1,0 +1,6 @@
+[submodule "cipher/des/rust"]
+	path = cipher/des/rust
+	url = https://github.com/pfz4/des-rust
+[submodule "cipher/aes/rust"]
+	path = cipher/aes/rust
+	url = https://github.com/chronal-V/aes-rust
