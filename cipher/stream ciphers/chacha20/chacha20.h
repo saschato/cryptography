@@ -84,13 +84,13 @@ void generateChachaKeystream(struct chacha20State *state) {
 
     for (int i = 0; i < 10; i++) {
         quarterRound(initialState, 0, 4, 8, 12);
-		quarterRound(initialState, 1, 5, 9, 13);
-		quarterRound(initialState, 2, 6, 10, 14);
-		quarterRound(initialState, 3, 7, 11, 15);
-		quarterRound(initialState, 0, 5, 10, 15);
-		quarterRound(initialState, 1, 6, 11, 12);
-		quarterRound(initialState, 2, 7, 8, 13);
-		quarterRound(initialState, 3, 4, 9, 14);
+	quarterRound(initialState, 1, 5, 9, 13);
+	quarterRound(initialState, 2, 6, 10, 14);
+	quarterRound(initialState, 3, 7, 11, 15);
+	quarterRound(initialState, 0, 5, 10, 15);
+	quarterRound(initialState, 1, 6, 11, 12);
+	quarterRound(initialState, 2, 7, 8, 13);
+	quarterRound(initialState, 3, 4, 9, 14);
     }
 
     for(int i = 0; i < 16; i++) {
