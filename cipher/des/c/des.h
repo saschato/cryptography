@@ -8,6 +8,17 @@
 typedef uint8_t BYTE;
 typedef uint32_t WORD;
 typedef uint64_t DWORD;
+typedef enum {
+    ENC,
+    DEC
+} operation;
+typedef enum {
+    ECB,
+    CBC,
+    OFB,
+    CFB,
+    CTR
+} mode;
 
 #define ROTL(x,n) (((x << n) & 0x0fffffff) | ((x >> 28 - n) & 0x0fffffff))
 #define ROTR(x,n) (((x >> n) & 0x0fffffff) | ((x << 28 - n) & 0x0fffffff))
@@ -153,7 +164,7 @@ struct desPlain {
     WORD right;
 };
 
-void initDESKey(struct desKey *key, DWORD kVal) {
+void initDESKey(struct desKey *key, DWORD kVal, enum operation op) {
     key->key = kVal;
     key->tKey = 0;
 
@@ -168,9 +179,13 @@ void initDESKey(struct desKey *key, DWORD kVal) {
 
     // key generation
     for(int i = 0; i < 16; i++) {
-        // rotate left
-        key->left = ROTL(key->left,left_shifts[i]);
-        key->right = ROTL(key->right,left_shifts[i]);
+        // rotation
+        switch(op) {
+            case ENC:   key->left = ROTL(key->left,left_shifts[i]);
+                        key->right = ROTL(key->right,left_shifts[i]);
+            case DEC:   key->left = ROTR(key->left,right_shifts[i]);
+                        key->right = ROTR(key->right,right_shifts[i]);
+        }
         key->tKey = combine(key->left,key->right);
 
         // permuted choice 2
@@ -221,7 +236,7 @@ void f(struct desPlain  *plain, DWORD key) {
     }
 }
 
-void encrypt(struct desPlain *plain, struct desKey *key) {
+void operate(struct desPlain *plain, struct desKey *key) {
     plain->tPlain = 0;
     
     // IP
@@ -252,9 +267,18 @@ void encrypt(struct desPlain *plain, struct desKey *key) {
     }
 }
 
-void encryptFileECB(char *filename, struct desKey *key) {
-    FILE *file;
+void operateFileECB(char *filename, struct desKey *key) {
+    FILE *file = fopen(filename, "rb");
+    FILE *fileout = fopen("encrypted", "wb");
+    struct desPlain *plaintext = (struct desPlain *) malloc(sizeof(struct desPlain));
 
+    while(fread(&plaintext->plain, sizeof(DWORD), 1, file) == 1) {
+        operate(plaintext, key);
+        fwrite(&plaintext->plain, sizeof(DWORD), 1 , fileout);
+    }
+
+    fclose(file);
+    free(plaintext);
 }
 
 #endif
