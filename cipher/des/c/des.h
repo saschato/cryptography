@@ -164,7 +164,7 @@ struct desPlain {
     WORD right;
 };
 
-void initDESKey(struct desKey *key, DWORD kVal, enum operation op) {
+void initDESKey(struct desKey *key, DWORD kVal, operation op) {
     key->key = kVal;
     key->tKey = 0;
 
@@ -183,8 +183,10 @@ void initDESKey(struct desKey *key, DWORD kVal, enum operation op) {
         switch(op) {
             case ENC:   key->left = ROTL(key->left,left_shifts[i]);
                         key->right = ROTL(key->right,left_shifts[i]);
+                        break;
             case DEC:   key->left = ROTR(key->left,right_shifts[i]);
                         key->right = ROTR(key->right,right_shifts[i]);
+                        break;
         }
         key->tKey = combine(key->left,key->right);
 
